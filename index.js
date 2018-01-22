@@ -84,7 +84,8 @@ function sesHandler(message, callback) {
     return S3.getObject({ Bucket: bucket_name, Key: message.mail.messageId }, (err, data) => {
         if (err) {
             console.log("Failed to load email from S3",err);
-            return callback(err);
+            return callback(null, { response: "Ignoring incoming email due to error accessing email content on S3. "+
+                    "Do we have a permission issue or this notification can be a replay: " + err.message});
         }
         message.content = data.Body.toString('utf-8');
         return S3.deleteObject({ Bucket: bucket_name, Key: message.mail.messageId }, (err, data) => {
